@@ -1,6 +1,6 @@
-# English_performance_analysis_tool
+# 英语成绩分析工具
 一个可以分析英语作文成绩的工具，可使用OCR识别，AI打分
-Python结课作业，功能较少，欢迎提pr
+Python结课作业，功能较少，最近较忙，有时间再维护，欢迎提pr
 
 界面展示：<br><br>
 ![1](https://user-images.githubusercontent.com/96509738/205059262-8903793e-9ca6-46f7-a62c-4520b31f0ee0.png)
