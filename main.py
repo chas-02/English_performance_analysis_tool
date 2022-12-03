@@ -145,7 +145,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             string += item + '\n'
 
         self.setWindowModality(Qt.ApplicationModal)
-        self.formOpen()
+        self.formOpen(string)
 
     def getFile(self):
         try:
@@ -163,16 +163,18 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.closeForm()
         self.getScore(text)
 
-    def formOpen(self):
+    def formOpen(self, string):
         try:
             if not self.formIsOpen:
                 self.setWindowModality(Qt.ApplicationModal)
                 self.formIsOpen = True
                 Form = MyForm(self)
                 Form.resize(int(self.width() * 0.8), self.height())
-                Form.show()
                 Form.textSignal.connect(self.closeForm)
                 Form.textSignal.connect(self.getText)
+                if string!='':
+                    Form.textEdit.setText(string)
+                Form.show()
         except Exception as e:
             print(e)
 
