@@ -10,10 +10,8 @@ import lk_logger
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QFileDialog
 from PyQt5.QtGui import QCursor, QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
-from crawler import runGetHtml
 from main_window import Ui_MainWindow
 from input_form import Ui_Form
-from ocr import OCRrecognition
 
 
 class MyForm(QWidget, Ui_Form):
@@ -126,6 +124,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def getScore(self, text):
         if text!='':
+            from crawler import runGetHtml
             self.textScore = runGetHtml(text, self.comboBox.currentText())
             print(self.textScore)
             self.outputScore()
@@ -137,6 +136,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             button.setText(self.textScore[idx][1])
 
     def ocrRecognition(self, fileName):
+        from ocr import OCRrecognition
         ocr = OCRrecognition(use_gpu=False)
         result = ocr.ocr(fileName)[0]
         string = ""
@@ -145,13 +145,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             string += item + '\n'
 
         self.setWindowModality(Qt.ApplicationModal)
-        self.formIsOpen = True
-        Form = MyForm(self)
-        Form.resize(int(self.width() * 0.8), self.height())
-        Form.textEdit.setText(string)
-        Form.textSignal.connect(self.closeForm)
-        Form.textSignal.connect(self.getText)
-        Form.show()
+        self.formOpen()
 
     def getFile(self):
         try:
