@@ -21,17 +21,13 @@ class MyForm(QWidget, Ui_Form):
         super().__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("输入框")
-        self.pushButton.clicked.connect(self.textReturn)
+        self.pushButton.clicked.connect(self.closeForm)
         self.pushButton_6.clicked.connect(self.closeForm)
         self.pushButton_6.setCursor(QCursor(Qt.PointingHandCursor))
         self.pushButton.setCursor(QCursor(Qt.PointingHandCursor))
         self.label_8.setEnabled(False)
 
     def closeForm(self):
-        self.textSignal.emit('')
-        MyForm.close(self)
-
-    def textReturn(self):
         self.textSignal.emit(self.textEdit.toPlainText())
         MyForm.close(self)
 
@@ -153,7 +149,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             if fileName != '':
                 self.ocrRecognition(fileName)
         except Exception as e:
-            print(e)
+            print("In getFile function:", e)
 
     def closeForm(self):
         self.formIsOpen = False
@@ -166,6 +162,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def formOpen(self, string):
         try:
             if not self.formIsOpen:
+                if string == False:
+                    string = ''
                 self.setWindowModality(Qt.ApplicationModal)
                 self.formIsOpen = True
                 Form = MyForm(self)
@@ -175,7 +173,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 Form.textEdit.setText(string)
                 Form.show()
         except Exception as e:
-            print(e)
+            print("In formOpen function:", e)
 
     def changePage(self):
         if self.comboBox.currentText() == "请选择试卷类型":
@@ -211,7 +209,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 self.move(0, 0)
                 self.resize(self.screen().size())
         except Exception as e:
-            print(e)
+            print("In setWindowSize function:", e)
 
     def mouseDoubleClickEvent(self, event):
         if event.button() == Qt.LeftButton:

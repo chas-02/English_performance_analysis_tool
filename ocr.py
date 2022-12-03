@@ -10,5 +10,5 @@ class OCRrecognition:
             result = self.PdOCR.ocr(img_path, cls=True)
             return result
         except Exception as e:
-            print(e)
+            print("In OCRrecognition class -> ocr function:", e)
             return []
