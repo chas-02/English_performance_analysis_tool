@@ -22,7 +22,6 @@ class Ui_Form(object):
         self.widget = QtWidgets.QWidget(Form)
         self.widget.setStyleSheet("#widget{\n"
 "    border-radius:22px;\n"
-"    \n"
 "    background-color: qlineargradient(spread:pad, x1:1, y1:0.0284091, x2:0, y2:1, stop:0 rgba(152, 98, 255, 255), stop:1 rgba(199, 255, 255, 255));\n"
 "}")
         self.widget.setObjectName("widget")
@@ -101,7 +100,7 @@ class Ui_Form(object):
         self.pushButton.setStyleSheet("QPushButton{\n"
 "    border-radius:15px;\n"
 "    background-color: qlineargradient(spread:reflect, x1:0.576, y1:0.506, x2:0.283, y2:0.772727, stop:0.381443 rgba(26, 55, 255, 20), stop:1 rgba(255, 255, 255, 100));\n"
-"    opacity:0.6; filter: alpha(opacity=60);\n"
+"    opacity:0.6;\n"
 "    \n"
 "}\n"
 "QPushButton:pressed{\n"
