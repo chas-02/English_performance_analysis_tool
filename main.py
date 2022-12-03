@@ -172,8 +172,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 Form.resize(int(self.width() * 0.8), self.height())
                 Form.textSignal.connect(self.closeForm)
                 Form.textSignal.connect(self.getText)
-                if string!='':
-                    Form.textEdit.setText(string)
+                Form.textEdit.setText(string)
                 Form.show()
         except Exception as e:
             print(e)
