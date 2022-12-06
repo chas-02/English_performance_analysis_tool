@@ -8,8 +8,9 @@ import sys
 import os
 import lk_logger
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QFileDialog
+from PyQt5.Qt import QThread
 from PyQt5.QtGui import QCursor, QIcon
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from main_window import Ui_MainWindow
 from input_form import Ui_Form
 
@@ -45,7 +46,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.formIsOpen = False
         self.isTop = False  # 窗口置顶
         self.isDebugging = False  # 调试模式
-        self.textScore = None
         self.normal_size = self.size().width(), self.size().height()
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.FramelessWindowHint)  # 设置窗口标志：隐藏窗口边框
@@ -87,14 +87,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.isDebugging = False
             self.show()
         else:
-            from time import strftime, localtime
             lk_logger.unload()
-            # 日志文件名按照程序运行时间设置
-            log_file_name = 'log-' + strftime("%Y%m%d-%H%M%S", localtime()) + '.log'
             # 记录正常的 print 信息
-            sys.stdout = Logger(log_file_name)
+            sys.stdout = Logger(sys.stdout)
             # 记录 traceback 异常信息
-            sys.stderr = Logger(log_file_name)
+            sys.stderr = Logger(sys.stderr)
             self.pushButton_2.setStyleSheet('''QPushButton{
                                         border-image: url(:/icons/bug-fill.svg);
                                         }
@@ -120,34 +117,49 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def getScore(self, text):
         if text!='':
-            from crawler import runGetHtml
-            self.textScore = runGetHtml(text, self.comboBox.currentText())
-            print(self.textScore)
-            self.outputScore()
+            # 创建子线程实例
+            self.thread = QThread()
+            # 创建爬虫实例
+            self.crawler_thread = CrawlerThread()
+            # 向子线程传递参数
+            self.crawler_thread.text = text
+            self.crawler_thread.grade = self.comboBox.currentText()
+            # 将子线程移动到多线程类中
+            self.crawler_thread.moveToThread(self.thread)
+            # 子线程开始前, 连接相关运行函数
+            self.thread.started.connect(self.crawler_thread.run)
+            # 获取子线程信号
+            self.crawler_thread.scoreSignal.connect(self.outputScore)
+            # 子线程运行完时, 结束
+            self.thread.finished.connect(self.thread.quit)
+            # 开始运行子线程
+            self.thread.start()
 
-    def outputScore(self):
+    def outputScore(self, score_list):
         buttons = [self.textBrowser, self.textBrowser_4, self.textBrowser_3, self.textBrowser_5, self.textBrowser_6, self.textBrowser_2]
         for idx, button in enumerate(buttons):
             button.clear()
-            button.setText(self.textScore[idx][1])
+            button.setText(score_list[idx][1])
 
-    def ocrRecognition(self, fileName):
-        from ocr import OCRrecognition
-        ocr = OCRrecognition(use_gpu=False)
-        result = ocr.ocr(fileName)[0]
-        string = ""
-        for item in result:
-            item = item[1][0]
-            string += item + '\n'
-
+    def ocr2form(self, string):
         self.setWindowModality(Qt.ApplicationModal)
         self.formOpen(string)
 
+    def ocrRecognition(self, img_path):
+        self.thread = QThread()
+        self.ocrthread = OCRThread()
+        self.ocrthread.img_path = img_path
+        self.ocrthread.moveToThread(self.thread)
+        self.thread.started.connect(self.ocrthread.run)
+        self.ocrthread.textSignal.connect(self.ocr2form)
+        self.thread.finished.connect(self.thread.quit)
+        self.thread.start()
+
     def getFile(self):
         try:
-            fileName, fileType = QFileDialog.getOpenFileName(self, "选取文件", os.getcwd(), "图片文件(*.jpg *.png)")
-            if fileName != '':
-                self.ocrRecognition(fileName)
+            filePath, fileType = QFileDialog.getOpenFileName(self, "选取文件", os.getcwd(), "图片文件(*.jpg *.png)")
+            if filePath != '':
+                self.ocrRecognition(filePath)
         except Exception as e:
             print("In getFile function:", e)
 
@@ -250,19 +262,54 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             pass
 
 
+class CrawlerThread(QObject):
+    scoreSignal = pyqtSignal(list)
+    text = ''
+    grade = ''
+    def __init__(self):
+        super().__init__()
+
+    def run(self):
+        from crawler import runGetHtml
+        score_list = runGetHtml(self.text, self.grade)
+        self.scoreSignal.emit(score_list)
+
+
+class OCRThread(QObject):
+    textSignal = pyqtSignal(str)
+    img_path = ''
+    def __init__(self):
+        super().__init__()
+
+    def run(self):
+        from ocr import OCRrecognition
+        ocr = OCRrecognition(use_gpu=False)
+        result = ocr.ocr(self.img_path)[0]
+        string = ""
+        for item in result:
+            item = item[1][0]
+            string += item + '\n'
+        self.textSignal.emit(string)
+
+
 class Logger(object):
-    def __init__(self, file_name="main.log", stream=sys.stdout):
+    def __init__(self, stream=sys.stdout):
+        from time import strftime, localtime
+        output_dir = "log"
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        # 日志文件名按照程序运行时间设置
+        log_name = 'log-' + strftime("%Y%m%d-%H%M%S", localtime()) + '.log'
+        filename = os.path.join(output_dir, log_name)
+
         self.terminal = stream
-        self.log = open(file_name, "a")
+        self.log = open(filename, 'a+')
 
     def write(self, message):
         self.terminal.write(message)
         self.log.write(message)
 
     def flush(self):
-        pass
-
-    def fileno(self):
         pass
 
 if __name__ == '__main__':
