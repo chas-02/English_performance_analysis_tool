@@ -46,6 +46,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.formIsOpen = False
         self.isTop = False  # 窗口置顶
         self.isDebugging = False  # 调试模式
+        self.textScore = None
         self.normal_size = self.size().width(), self.size().height()
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.FramelessWindowHint)  # 设置窗口标志：隐藏窗口边框
@@ -117,42 +118,37 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def getScore(self, text):
         if text!='':
-            # 创建子线程实例
-            self.thread = QThread()
-            # 创建爬虫实例
-            self.crawler_thread = CrawlerThread()
-            # 向子线程传递参数
-            self.crawler_thread.text = text
-            self.crawler_thread.grade = self.comboBox.currentText()
-            # 将子线程移动到多线程类中
-            self.crawler_thread.moveToThread(self.thread)
-            # 子线程开始前, 连接相关运行函数
-            self.thread.started.connect(self.crawler_thread.run)
-            # 获取子线程信号
-            self.crawler_thread.scoreSignal.connect(self.outputScore)
-            # 子线程运行完时, 结束
-            self.thread.finished.connect(self.thread.quit)
-            # 开始运行子线程
-            self.thread.start()
+            from crawler import runGetHtml
+            self.textScore = runGetHtml(text, self.comboBox.currentText())
+            print(self.textScore)
+            self.outputScore()
 
-    def outputScore(self, score_list):
+    def outputScore(self):
         buttons = [self.textBrowser, self.textBrowser_4, self.textBrowser_3, self.textBrowser_5, self.textBrowser_6, self.textBrowser_2]
         for idx, button in enumerate(buttons):
             button.clear()
-            button.setText(score_list[idx][1])
+            button.setText(self.textScore[idx][1])
 
     def ocr2form(self, string):
         self.setWindowModality(Qt.ApplicationModal)
         self.formOpen(string)
 
     def ocrRecognition(self, img_path):
+        # 创建子线程实例
         self.thread = QThread()
+        # 创建OCR实例
         self.ocrthread = OCRThread()
+        # 向子线程传递参数
         self.ocrthread.img_path = img_path
+        # 将子线程移动到多线程类中
         self.ocrthread.moveToThread(self.thread)
+        # 子线程开始前, 连接相关运行函数
         self.thread.started.connect(self.ocrthread.run)
+        # 获取子线程信号, 连接槽函数
         self.ocrthread.textSignal.connect(self.ocr2form)
+        # 子线程运行完成时, 手动结束
         self.thread.finished.connect(self.thread.quit)
+        # 开始运行子线程
         self.thread.start()
 
     def getFile(self):
@@ -260,19 +256,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 self.move(self.x() + dis_x, self.y() + dis_y)
         except:
             pass
-
-
-class CrawlerThread(QObject):
-    scoreSignal = pyqtSignal(list)
-    text = ''
-    grade = ''
-    def __init__(self):
-        super().__init__()
-
-    def run(self):
-        from crawler import runGetHtml
-        score_list = runGetHtml(self.text, self.grade)
-        self.scoreSignal.emit(score_list)
 
 
 class OCRThread(QObject):
