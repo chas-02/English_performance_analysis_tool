@@ -206,7 +206,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.isTop = True
             self.show()
 
-    #  设置窗口大小
     def setWindowSize(self):
         try:
             if self.size() == self.screen().size():
@@ -245,7 +244,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             mouse_y = QCursor.pos().y()
             if self.size() == self.screen().size():
                 mouse_x = QCursor.pos().x()
-
                 pos_x = mouse_x - int(self.normal_size[0]*(mouse_x - self.x())/self.width())
                 pos_y = mouse_y - int(self.normal_size[1]*(mouse_y - self.y())/self.width())
                 self.move(pos_x + dis_x, pos_y + dis_y)
