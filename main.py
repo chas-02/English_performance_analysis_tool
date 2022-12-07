@@ -53,7 +53,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.setSignConnect()
         self.setCursorStyle()  # 设置光标样式
 
-    # 设置鼠标移动光标样式
     def setCursorStyle(self):
         self.pushButton.setCursor(QCursor(Qt.PointingHandCursor))
         self.pushButton_2.setCursor(QCursor(Qt.PointingHandCursor))
@@ -65,7 +64,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.pushButton_12.setCursor(QCursor(Qt.PointingHandCursor))
         self.pushButton_13.setCursor(QCursor(Qt.PointingHandCursor))
 
-    # 设置控件信号连接
     def setSignConnect(self):
         self.label_8.setEnabled(False)
         self.pushButton_2.clicked.connect(self.setDebugging)
