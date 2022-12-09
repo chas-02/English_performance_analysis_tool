@@ -1,0 +1,7 @@
+lk_logger==5.4.7
+#paddlepaddle需要根据自己电脑环境安装，此处默认使用CUDA10.2
+paddlepaddle-gpu==2.4.0
+paddleocr==2.6.1.1
+pyppeteer==1.0.2
+PyQt5==5.15.4
+PyQt5-tools==5.15.4
