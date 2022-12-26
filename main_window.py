@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(922, 620)
+        MainWindow.resize(648, 542)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -161,10 +161,15 @@ class Ui_MainWindow(object):
         self.pushButton_6.setObjectName("pushButton_6")
         self.horizontalLayout_4.addWidget(self.pushButton_6)
         self.verticalLayout_6.addWidget(self.frame_1)
-        self.horizontalLayout_13 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_13.setSpacing(0)
-        self.horizontalLayout_13.setObjectName("horizontalLayout_13")
-        self.frame_2 = QtWidgets.QFrame(self.widget)
+        self.stackedWidget = QtWidgets.QStackedWidget(self.widget)
+        self.stackedWidget.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.stackedWidget.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.stackedWidget.setObjectName("stackedWidget")
+        self.page = QtWidgets.QWidget()
+        self.page.setObjectName("page")
+        self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.page)
+        self.verticalLayout_8.setObjectName("verticalLayout_8")
+        self.frame_2 = QtWidgets.QFrame(self.page)
         self.frame_2.setStyleSheet("#frame_2{\n"
 "    \n"
 "    background-color: rgba(255, 255, 255, 0);\n"
@@ -269,11 +274,19 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addLayout(self.horizontalLayout_6)
         spacerItem5 = QtWidgets.QSpacerItem(140, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem5)
+        self.horizontalLayout.setStretch(0, 1)
+        self.horizontalLayout.setStretch(1, 10)
+        self.horizontalLayout.setStretch(2, 1)
         self.verticalLayout.addWidget(self.frame)
         self.verticalLayout.setStretch(0, 1)
         self.verticalLayout.setStretch(1, 8)
-        self.horizontalLayout_13.addWidget(self.frame_2)
-        self.frame_3 = QtWidgets.QFrame(self.widget)
+        self.verticalLayout_8.addWidget(self.frame_2)
+        self.stackedWidget.addWidget(self.page)
+        self.page_2 = QtWidgets.QWidget()
+        self.page_2.setObjectName("page_2")
+        self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.page_2)
+        self.verticalLayout_9.setObjectName("verticalLayout_9")
+        self.frame_3 = QtWidgets.QFrame(self.page_2)
         self.frame_3.setStyleSheet("QFrame{\n"
 "    \n"
 "    background-color: rgba(255, 255, 255, 0);\n"
@@ -580,12 +593,14 @@ class Ui_MainWindow(object):
         self.textBrowser_2.setObjectName("textBrowser_2")
         self.horizontalLayout_12.addWidget(self.textBrowser_2)
         self.verticalLayout_7.addWidget(self.frame_8)
-        self.horizontalLayout_13.addWidget(self.frame_3)
-        self.verticalLayout_6.addLayout(self.horizontalLayout_13)
+        self.verticalLayout_9.addWidget(self.frame_3)
+        self.stackedWidget.addWidget(self.page_2)
+        self.verticalLayout_6.addWidget(self.stackedWidget)
         self.verticalLayout_5.addWidget(self.widget)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
+        self.stackedWidget.setCurrentIndex(0)
         self.pushButton_6.clicked.connect(MainWindow.close)
         self.pushButton_7.clicked.connect(MainWindow.showMinimized)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
