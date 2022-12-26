@@ -22,14 +22,17 @@ class MyForm(QWidget, Ui_Form):
         super().__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("输入框")
-        self.pushButton.clicked.connect(self.closeForm)
+        self.pushButton.clicked.connect(self.textPost)
         self.pushButton_6.clicked.connect(self.closeForm)
         self.pushButton_6.setCursor(QCursor(Qt.PointingHandCursor))
         self.pushButton.setCursor(QCursor(Qt.PointingHandCursor))
         self.label_8.setEnabled(False)
 
-    def closeForm(self):
+    def textPost(self):
         self.textSignal.emit(self.textEdit.toPlainText())
+        MyForm.close(self)
+
+    def closeForm(self):
         MyForm.close(self)
 
 
@@ -71,7 +74,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.pushButton_11.clicked.connect(self.setTopWindow)
         self.pushButton_12.setEnabled(False)
         self.pushButton_13.setEnabled(False)
-        self.frame_3.setHidden(True)
         self.pushButton_10.clicked.connect(self.changePage)
         self.pushButton.clicked.connect(self.formOpen)
         self.pushButton_3.clicked.connect(self.getFile)
@@ -101,16 +103,14 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def backPage(self):
         self.pushButton_12.disconnect()
         self.pushButton_12.setEnabled(False)
-        self.frame_3.setHidden(True)
-        self.frame_2.setHidden(False)
+        self.stackedWidget.setCurrentIndex(0)
         self.pushButton_13.setEnabled(True)
         self.pushButton_13.clicked.connect(self.gotoPage)
 
     def gotoPage(self):
         self.pushButton_13.disconnect()
         self.pushButton_12.setEnabled(True)
-        self.frame_3.setHidden(False)
-        self.frame_2.setHidden(True)
+        self.stackedWidget.setCurrentIndex(1)
         self.pushButton_13.setEnabled(False)
         self.pushButton_12.clicked.connect(self.backPage)
 
