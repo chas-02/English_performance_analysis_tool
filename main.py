@@ -50,6 +50,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.isTop = False  # 窗口置顶
         self.isDebugging = False  # 调试模式
         self.textScore = None
+        self.desktop_geometry = QApplication.desktop().availableGeometry()
         self.normal_size = self.size().width(), self.size().height()
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.FramelessWindowHint)  # 设置窗口标志：隐藏窗口边框
@@ -206,13 +207,21 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def setWindowSize(self):
         try:
-            if self.size() == self.screen().size():
+            if self.geometry() == self.desktop_geometry:
                 self.move(self.window_x, self.window_y)
                 self.resize(self.normal_size[0], self.normal_size[1])
+                self.widget.setStyleSheet("#widget{\n"
+                                          "    border-radius:22px;\n"
+                                          "    \n"
+                                          "    background-color: qlineargradient(spread:pad, x1:1, y1:0.0284091, x2:0, y2:1, stop:0 rgba(152, 98, 255, 255), stop:1 rgba(199, 255, 255, 255));\n"
+                                          "}")
             else:
                 self.window_x, self.window_y = self.x(), self.y()
                 self.move(0, 0)
-                self.resize(self.screen().size())
+                self.setGeometry(self.desktop_geometry)
+                self.widget.setStyleSheet("#widget{\n"
+                                          "    background-color: qlineargradient(spread:pad, x1:1, y1:0.0284091, x2:0, y2:1, stop:0 rgba(152, 98, 255, 255), stop:1 rgba(199, 255, 255, 255));\n"
+                                          "}")
         except Exception as e:
             print("In setWindowSize function:", e)
 
@@ -240,12 +249,19 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             dis_x = event.x() - self.start_x
             dis_y = event.y() - self.start_y
             mouse_y = QCursor.pos().y()
-            if self.size() == self.screen().size():
+            if self.geometry() == self.desktop_geometry:
                 mouse_x = QCursor.pos().x()
                 pos_x = mouse_x - int(self.normal_size[0]*(mouse_x - self.x())/self.width())
                 pos_y = mouse_y - int(self.normal_size[1]*(mouse_y - self.y())/self.width())
+                # 设置窗体位置
                 self.move(pos_x + dis_x, pos_y + dis_y)
                 self.resize(self.normal_size[0], self.normal_size[1])
+                self.widget.setStyleSheet("#widget{\n"
+                                          "    border-radius:22px;\n"
+                                          "    \n"
+                                          "    background-color: qlineargradient(spread:pad, x1:1, y1:0.0284091, x2:0, y2:1, stop:0 rgba(152, 98, 255, 255), stop:1 rgba(199, 255, 255, 255));\n"
+                                          "}")
+
                 self.start_x = mouse_x - self.x()
                 self.start_y = mouse_y - self.y()
             else:
