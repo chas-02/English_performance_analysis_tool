@@ -1,4 +1,4 @@
-lk_logger==5.4.7
+lk-logger==5.4.7
 #paddlepaddle需要根据自己电脑环境安装，此处默认使用CUDA10.2
 paddlepaddle-gpu==2.4.0
 paddleocr==2.6.1.1
