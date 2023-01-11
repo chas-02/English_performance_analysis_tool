@@ -16,23 +16,25 @@ from input_form import Ui_Form
 
 
 class MyForm(QWidget, Ui_Form):
+    closeSignal = pyqtSignal()
     textSignal = pyqtSignal([str])
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("输入框")
-        self.pushButton.clicked.connect(self.textPost)
         self.pushButton_6.clicked.connect(self.closeForm)
         self.pushButton_6.setCursor(QCursor(Qt.PointingHandCursor))
         self.pushButton.setCursor(QCursor(Qt.PointingHandCursor))
         self.label_8.setEnabled(False)
 
     def textPost(self):
+        self.closeSignal.emit()
         self.textSignal.emit(self.textEdit.toPlainText())
         MyForm.close(self)
 
     def closeForm(self):
+        self.closeSignal.emit()
         MyForm.close(self)
 
 
@@ -163,8 +165,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def getText(self, text):
         print(text)
-        self.closeForm()
-        self.getScore(text)
+        if text != '':
+            self.getScore(text)
 
     def formOpen(self, string):
         try:
@@ -175,7 +177,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 self.formIsOpen = True
                 Form = MyForm(self)
                 Form.resize(int(self.width() * 0.8), self.height())
-                Form.textSignal.connect(self.closeForm)
+                Form.closeSignal.connect(self.closeForm)
                 Form.textSignal.connect(self.getText)
                 Form.textEdit.setText(string)
                 Form.show()
